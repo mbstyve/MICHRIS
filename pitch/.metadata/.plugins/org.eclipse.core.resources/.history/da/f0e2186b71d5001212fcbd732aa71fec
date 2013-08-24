@@ -1,0 +1,42 @@
+
+public class Card {
+	private String suit;
+	private String value;
+	private int position;
+	public Card() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Card(int s, int val) {
+		if(s == 1)  	suit = "Spade";
+		if(s == 2) 		suit = "Diamond";
+		if(s == 3) 		suit = "Club";
+		if(s == 4) 		suit = "heart";
+		for(int i = 2; 1 < 11; i++){
+			if(val == i) value = Integer.toString(i);
+		}
+		if(val == 11)	value = "Jack";
+		if(val == 12)	value = "Queen";
+		if(val == 13)	value = "King";
+		if(val == 14)	value = "Ace";
+	}
+
+	public String getSuit() {
+		return suit;
+	}
+
+	public void setSuit(String suit) {
+		this.suit = suit;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+	
+	
+	
+}

@@ -1,0 +1,34 @@
+import java.util.ArrayList;
+import java.util.Collection;
+
+
+public class GameFlow {
+	private int team1GamePoints = 0;
+	private int team2GamePoints = 0;
+	private Collection<Card> playedCards = new ArrayList<Card>();
+	private Collection<Player> players = new ArrayList<Player>();
+	
+	
+	public void playHand(int suit){
+		for(Player player : players){
+			if(player.canPlay(suit)){
+				Card card = new Card();
+				card = player.selectCard();
+				if(card.canBePlayed(suit)){
+					
+				}
+			}
+		}
+	}
+	
+	public void setPointers(int suitIdx){
+		for(Player player : playerCollection){
+			for(Card card : player.getHand()){
+				if(card.getSuit() == suitIdx){
+					if(card.getValue() == ){
+				}
+			}
+		}
+	}
+
+}

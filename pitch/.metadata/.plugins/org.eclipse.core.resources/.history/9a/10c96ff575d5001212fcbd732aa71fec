@@ -1,0 +1,18 @@
+/**
+ * 
+ */
+
+/**
+ * @author Michael
+ *
+ */
+public class Deck {
+
+	/**
+	 * 
+	 */
+	public Deck() {
+		
+	}
+
+}

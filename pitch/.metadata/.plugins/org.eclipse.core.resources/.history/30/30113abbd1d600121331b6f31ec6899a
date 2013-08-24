@@ -1,0 +1,37 @@
+import java.util.ArrayList;
+import java.util.Collection;
+
+
+
+public class GameInit {
+	public static void main(String[] Args){
+		Collection<Player> playerCollection= new ArrayList<Player>();
+		Player pOne = new Player();
+		playerCollection.add(pOne);
+		Player pTwo = new Player();
+		playerCollection.add(pTwo);
+		Player pThree = new Player();
+		playerCollection.add(pThree);
+		Player pFour = new Player();
+		playerCollection.add(pFour);
+		Deal deal = new Deal();
+		pOne.setHand(deal.getPlayerOneHand());
+		pTwo.setHand(deal.getPlayerTwoHand());
+		pThree.setHand(deal.getPlayerThreeHand());
+		pFour.setHand(deal.getPlayerFourHand());
+		
+		System.out.println("Player 1 hand"); 
+		pOne.showHand();
+		
+		System.out.println("Player 2 hand"); 
+		pTwo.showHand();
+		
+		System.out.println("Player 3 hand"); 
+		pThree.showHand();
+		
+		System.out.println("Player 4 hand"); 
+		pFour.showHand();
+		
+	}
+}
+

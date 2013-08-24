@@ -1,0 +1,7 @@
+import java.util.Collection;
+import java.util.Set;
+
+
+public class Pointers {
+	private Set<Integer> onePtSet = 12,  
+	

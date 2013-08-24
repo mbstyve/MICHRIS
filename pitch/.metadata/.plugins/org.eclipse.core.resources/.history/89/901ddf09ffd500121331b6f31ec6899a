@@ -1,0 +1,41 @@
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class Hand {
+	private List<Card> hand = new ArrayList<Card>();
+
+	public void addCard(Card card) {	
+		hand.add(card);
+	}
+
+	public Hand() {
+		super();
+	}
+	
+	public Card playCard(int i){
+		return hand.remove(i);
+	}
+	
+	public void orderHandBySuit(){
+		Hand newHand = new Hand();
+		for(int i = 1; i < 5; i++){
+			for(Card card : hand){
+				if(card.getSuit() == i){
+					newHand.addCard(card);
+				}
+			}
+		}
+		hand = newHand;
+	}
+	
+	public void displayHand(){
+		for(Card card : hand){
+			System.out.print(card.getValueName());
+			System.out.print(" of ");
+			System.out.println(card.getSuitName());
+
+
+		}
+	}
+}

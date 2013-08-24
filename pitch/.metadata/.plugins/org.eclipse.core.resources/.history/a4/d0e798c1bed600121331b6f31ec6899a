@@ -1,0 +1,20 @@
+import java.util.Scanner;
+
+
+public class GameBid {
+	
+	private int highBid = 3;
+	private Player highestBidPlayer = new Player();
+	
+	
+	public int getPlayerBid(Player player){
+		Scanner reader = new Scanner(System.in);
+		System.out.println("Enter your bid, the high is ", highBid);
+		//get user input for a
+		int newBid = reader.nextInt();
+		if(newBid > highBid){
+			highBid = new 
+		}
+		return
+	}
+}

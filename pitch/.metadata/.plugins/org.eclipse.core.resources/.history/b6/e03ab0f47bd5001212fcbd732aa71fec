@@ -1,0 +1,61 @@
+import java.util.List;
+
+
+public class Deal {
+	private Deck deck = new Deck();
+	private Hand playerOneHand;
+	private Hand playerTwoHand;
+	private Hand playerThreeHand;
+	private Hand playerFourHand;
+
+	public Deal() {
+		super();
+		deck.ShuffleDeck();
+		dealPOneHand();
+		dealPTwoHand();
+		dealPThreeHand();
+		dealPFourHand();
+	}
+
+	private void dealPOneHand(){
+		for(int i = 0; i < 54; i++){
+			if(i % 4 == 0){
+				playerOneHand.addCard(deck.getCard(i));
+			}
+		}
+
+	}
+	
+	private void dealPTwoHand(){
+		for(int i = 0; i < 54; i++){
+			if(i % 4 == 1){
+				playerTwoHand.addCard(deck.getCard(i));
+			}
+		}
+	}
+	
+	private void dealPThreeHand(){
+		for(int i = 0; i < 54; i++){
+			if(i % 4 == 2){
+				playerThreeHand.addCard(deck.getCard(i));
+			}
+		}
+	}
+
+	private void dealPFourHand(){
+		for(int i = 0; i < 54; i++){
+			if(i % 4 == 3){
+				playerFourHand.addCard(deck.getCard(i));
+			}
+		}
+	}
+	
+	public Deck getDeck() {
+		return deck;
+	}
+
+	public void setDeck(Deck deck) {
+		this.deck = deck;
+	}
+	
+}

@@ -1,0 +1,98 @@
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Scanner;
+
+
+public class GameBid {
+	
+	private static int highBid = 3;
+	private static int highestBidIdx = 3;
+	private static Collection<Player> playerCollection = new ArrayList<Player>();
+	private static int suitRep;
+	
+	public static void initializeBidSequence(Collection<Player> players){
+		playerCollection = players;
+		for(int i = 0; i < 4; i++){
+			getPlayerBid(i);
+		}
+		
+		suitRep = getTrumpSuit();
+		
+	}
+	
+	public static void getPlayerBid(int newHighIdx){
+		Scanner reader = new Scanner(System.in);
+		System.out.print("Enter your bid, the high is "+ highBid+":");
+		System.out.println();
+		//get user input for a
+		int newBid = reader.nextInt();
+		if(newBid > highBid){
+			highBid = newBid; 
+			highestBidIdx = newHighIdx;
+			//player.setBid(highBid);
+		}
+	}
+	
+	public static int getTrumpSuit(){
+		int suitRep = -1;
+		do{
+			Scanner reader = new Scanner(System.in);
+			System.out.println("Player " + (highestBidIdx+1) + " enter suit:");
+			//get user input for a
+			String suit = reader.next();
+			switch(suit){
+				case"spades":{
+					suitRep = 1;
+				}
+				case"diamonds":{
+					suitRep = 2;
+				}
+				case"clubs":{
+					suitRep = 3;
+				}
+				case"hearts":{
+					suitRep = 4;
+				}
+				default:{
+					System.out.println("Invalid suit, please enter one of the following");
+					System.out.println("'spades', 'diamonds', 'clubs' or 'hearts'");
+				}
+			}
+		}while(suitRep == -1);
+	return suitRep;
+	}
+
+	public static int getHighBid() {
+		return highBid;
+	}
+
+	public void setHighBid(int highBid) {
+		this.highBid = highBid;
+	}
+
+	public static int getHighestBidIdx() {
+		return highestBidIdx;
+	}
+
+	public void setHighestBidIdx(int highestBidIdx) {
+		this.highestBidIdx = highestBidIdx;
+	}
+
+	public Collection<Player> getPlayerCollection() {
+		return playerCollection;
+	}
+
+	public void setPlayerCollection(Collection<Player> playerCollection) {
+		this.playerCollection = playerCollection;
+	}
+
+	public static int getSuitRep() {
+		return suitRep;
+	}
+
+	public void setSuitRep(int suitRep) {
+		this.suitRep = suitRep;
+	}
+	
+	
+}
