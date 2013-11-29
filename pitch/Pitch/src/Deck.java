@@ -2,6 +2,8 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+import java.math.*;
 
 /**
  * 
@@ -13,8 +15,10 @@ import java.util.List;
  */
 public class Deck {
 
-	private List<Card> deck = new ArrayList<Card>();
+	private ArrayList<Card> deck = new ArrayList<Card>();
+	
 	private int iterator;
+
 	/**
 	 * 
 	 */
@@ -36,16 +40,17 @@ public class Deck {
 		return deck.get(i);
 	}
 	public void ShuffleDeck(){
-		Collections.shuffle(deck);
+		Random random = new Random();
+        for (int i = 0; i < deck.size(); i++)
+        {
+        	
+            int j = random.nextInt(deck.size());
+            Card temp = deck.get(i); deck.set(i, deck.get(j)); deck.set(j,temp);
+        }
+        
 	}
 
-	public List<Card> getDeck() {
-		return deck;
-	}
-
-	public void setDeck(List<Card> deck) {
-		this.deck = deck;
-	}
+	
 
 	public Card nextCard(){
 		Card card = deck.get(iterator);
@@ -53,13 +58,22 @@ public class Deck {
 		return card;
 	}
 	
-	public static void main(String args[]){
-		Deck deck = new Deck();
-		for(int i = 0; i < 54; i++){
-			Card card = deck.getCard(i);
-			System.out.println("Suit: "+card.getSuit()+"Val: "+card.getValue());
-		}
-		
+	public ArrayList<Card> getDeck() {
+		return deck;
 	}
+
+	public void setDeck(ArrayList<Card> deck) {
+		this.deck = deck;
+	}
+	
+	
+	public int getIterator() {
+		return iterator;
+	}
+
+	public void setIterator(int iterator) {
+		this.iterator = iterator;
+	}
+	
 }
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 
 public class Hand {
-	private Collection<Card> hand = new ArrayList<Card>();
+	private ArrayList<Card> hand = new ArrayList<Card>();
 
 	public void addCard(Card card) {	
 		hand.add(card);
@@ -19,7 +19,7 @@ public class Hand {
 	}
 		
 	public void orderHand(){
-		List<Card> newHand = new ArrayList<Card>();
+		ArrayList<Card> newHand = new ArrayList<Card>();
 		for(int i = 1; i < 5; i++){
 			for(int j = 2; j < 15; j++){
 				for(Card card : hand){
@@ -38,7 +38,15 @@ public class Hand {
 		}
 	}
 	
-	public Collection<Card> getHand(){
+	public void displayHandWithInterator(){
+		int i = 0;
+		for(Card card : hand){
+			System.out.println(i + ": " +card.getValueName()+" of "+card.getSuitName());
+			i++;
+		}
+	}
+	
+	public ArrayList<Card> getHand(){
 		return hand;
 	}
 }

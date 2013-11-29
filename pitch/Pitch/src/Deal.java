@@ -9,8 +9,10 @@ public class Deal {
 	public Deal() {
 		super();
 		Deck originalDeck = new Deck();
+		
 		//originalDeck.ShuffleDeck();
 		deck = originalDeck;
+		deck.ShuffleDeck();
 		dealHands();
 	}
 
