@@ -12,10 +12,6 @@ import javax.swing.JPanel;
 
 public class Start extends JFrame implements ActionListener {
 	
-    private JButton jbtnHit = new JButton("Hit");
-    private JButton jbtnStay = new JButton("Stay");
-    private JButton jbtnDeal = new JButton("Deal");
-
     private JLabel gameStatus = new JLabel(" ", JLabel.CENTER);
 
     JPanel tablePanel = new JPanel();
@@ -28,13 +24,6 @@ public class Start extends JFrame implements ActionListener {
 	        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	        statusPanel.add(gameStatus);
-
-	        jbtnHit.addActionListener(this);
-	        jbtnStay.addActionListener(this);
-	        jbtnDeal.addActionListener(this);
-
-	        jbtnHit.setEnabled(false);
-	        jbtnStay.setEnabled(false);
 
 	        tablePanel.setBackground(Color.GREEN);
 	        playerPanel.setBackground(Color.GREEN);
