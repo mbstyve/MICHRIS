@@ -21,11 +21,14 @@ public class GameBid {
 
 	public static void getPlayerBid(int newHighIdx) {
 		Scanner reader = new Scanner(System.in);
+		int newBid;
+		do{
 		System.out.print("Enter your bid Player " + (newHighIdx + 1)
 				+ ", the high is " + highBid + ":");
 		System.out.println();
 		// get user input for a
-		int newBid = reader.nextInt();
+		newBid = reader.nextInt();
+		}while(newBid <4 || newBid>10);
 		if (newBid > highBid) {
 			highBid = newBid;
 			highestBidIdx = newHighIdx;

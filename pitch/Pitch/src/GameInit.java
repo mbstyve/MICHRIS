@@ -88,13 +88,12 @@ public class GameInit {
 				// Subtraction of points for not making bid!
 				for (Player player : playerCollection) {
 					System.out.println(cardsOnTable.toString());
-					Card cardPlayed = player.playCard();
+					Card cardPlayed = player.playCard(suit);
 					cardsOnTable.add(cardPlayed);
 					if (cardPlayed.getSuit() == suit
 							|| cardPlayed.offJack(suit)) {
 						if (cardsOnTable.get(winningCardIdx).getHiearchy() < cardPlayed
-								.getHiearchy())
-							winningCardIdx = i;
+								.getHiearchy()) winningCardIdx = i;
 					}
 
 					if (cardPlayed.getValue() == 2) {
@@ -182,8 +181,13 @@ public class GameInit {
 			do {
 				System.out.println("press 'c' or 'continue'...");
 				cont = scan.nextLine();
-				if(cont == "c" || cont == "continue") continue;
 			} while (cont != "c" || cont != "continue");
+		}
+		if(pOne.teamPoints > 31 || pTwo.teamPoints > 31){
+			if(!(pOne.teamPoints> 31 && pTwo.teamPoints > 31) )//|| abs(pOne.teamPoints - pTwo.teamPoints) >=2){
+			{
+				roundCard = false;
+			}
 		}
 	}
 
