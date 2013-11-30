@@ -11,6 +11,7 @@ public class Player {
 	public int playerNum;
 	public boolean isDealer = false;
 	public int teamPoints = 0;
+	public int handPoints = 0;
 	
 	public Player(String Name, int playerNumber) {
 		super();

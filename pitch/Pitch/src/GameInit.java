@@ -71,11 +71,7 @@ public class GameInit {
 			playerCollection.get(bidderIdx).removeToSize();
 
 			int tempIdx = bidderIdx;
-			for (int j = 0; j < 4; j++) {
-				tempPlayers.add(playerCollection.get(tempIdx % 4));
-				tempIdx++;
-			}
-			playerCollection = tempPlayers;
+			playerCollection = rearrangePlayerList(tempIdx, playerCollection);
 
 			for (Player p : playerCollection) {
 				p.showHand();
@@ -85,7 +81,7 @@ public class GameInit {
 
 				int winningCardIdx = 0;
 				int handPoints = 0;
-				int playerOfTwo = 0;
+				int playerOfTwo = -1;
 				int i = 0;
 				// prompt all players to play card
 				// Add point totals for two teams!!!!
@@ -94,52 +90,110 @@ public class GameInit {
 					System.out.println(cardsOnTable.toString());
 					Card cardPlayed = player.playCard();
 					cardsOnTable.add(cardPlayed);
-					if (cardsOnTable.get(winningCardIdx).getHiearchy() < cardPlayed
-							.getHiearchy()
-							&& (cardPlayed.getSuit() == suit || cardPlayed
-									.offJack(suit))) {
-						winningCardIdx = i;
-
-						if (cardPlayed.getValue() == 2) {
-							playerOfTwo = i;
-
-						} else {
-							handPoints += cardPlayed.getPointVal();
-							i++;
-						}
+					if (cardPlayed.getSuit() == suit
+							|| cardPlayed.offJack(suit)) {
+						if (cardsOnTable.get(winningCardIdx).getHiearchy() < cardPlayed
+								.getHiearchy())
+							winningCardIdx = i;
 					}
 
-					if (playerCollection.get(winningCardIdx).playerNum % 2 == 0) {
-						pOne.teamPoints += handPoints;
-						pThree.teamPoints += handPoints;
+					if (cardPlayed.getValue() == 2) {
+						playerOfTwo = i;
 
 					} else {
-						pTwo.teamPoints += handPoints;
-						pFour.teamPoints += handPoints;
+						handPoints += cardPlayed.getPointVal();
+						i++;
 					}
+				}
 
+				if (playerCollection.get(winningCardIdx).playerNum % 2 == 0) {
+					pOne.handPoints += handPoints;
+					pThree.handPoints += handPoints;
+
+				} else {
+					pTwo.handPoints += handPoints;
+					pFour.handPoints += handPoints;
+				}
+				if (playerOfTwo != -1) {
 					if (playerCollection.get(playerOfTwo).playerNum % 2 == 0) {
-						pOne.teamPoints++;
-						pThree.teamPoints++;
+						pOne.handPoints++;
+						pThree.handPoints++;
 
 					}
 
-					else {
-						pTwo.teamPoints++;
-						pFour.teamPoints++;
+					if (playerCollection.get(playerOfTwo).playerNum % 2 == 1) {
+						pTwo.handPoints++;
+						pFour.handPoints++;
+					}
+				}
+				handPoints = 0;
+				playerOfTwo = -1;
+
+				playerCollection = rearrangePlayerList(winningCardIdx,
+						playerCollection);
+
+				// Check for the winning scores
+				// Reset the collectionPlayers for dealer
+				if (playerCollection.get(winningCardIdx).playerNum % 2 == 0) {
+					pOne.handPoints += handPoints;
+					pThree.handPoints += handPoints;
+
+				} else {
+					pTwo.handPoints += handPoints;
+					pFour.handPoints += handPoints;
+				}
+				if (playerOfTwo != -1) {
+					if (playerCollection.get(playerOfTwo).playerNum % 2 == 0) {
+						pOne.handPoints++;
+						pThree.handPoints++;
+
 					}
 
-					for (int j = 0; j < 4; j++) {
-						tempPlayers.add(playerCollection
-								.get(winningCardIdx % 4));
-						winningCardIdx++;
-						playerCollection = tempPlayers;
+					if (playerCollection.get(playerOfTwo).playerNum % 2 == 1) {
+						pTwo.handPoints++;
+						pFour.handPoints++;
 					}
-					// Check for the winning scores
-					// Reset the collectionPlayers for dealer
+				}
+				System.out.println(playerCollection.get(winningCardIdx).name
+						+ "Won hand!");
+				System.out.println("Team 1: " + pOne.handPoints);
+				System.out.println("Team 2: " + pTwo.handPoints);
+			}
+			if (playerCollection.get(bidderIdx).handPoints < bid) {
+				if (bidderIdx % 2 == 0) {
+					pOne.handPoints = -bid;
+					pThree.handPoints = -bid;
+				}
+				if (bidderIdx % 2 == 1) {
+					pTwo.handPoints = -bid;
+					pFour.handPoints = -bid;
 				}
 			}
-
+			for (Player p : playerCollection) {
+				p.teamPoints += p.handPoints;
+				p.handPoints = 0;
+			}
+			System.out.println("END OF Round:");
+			System.out.println("Team 1 :" + pOne.teamPoints);
+			System.out.println("Team 2: " + pTwo.teamPoints);
+			System.out.println("Continue?(c)");
+			Scanner scan = new Scanner(System.in);
+			String cont;
+			do {
+				System.out.println("press 'c' or 'continue'...");
+				cont = scan.nextLine();
+				if(cont == "c" || cont == "continue") continue;
+			} while (cont != "c" || cont != "continue");
 		}
+	}
+
+	public ArrayList<Player> rearrangePlayerList(int fistPlayer,
+			ArrayList<Player> playerCollection) {
+		ArrayList<Player> tempPlayers = new ArrayList<Player>();
+		for (int i = 0; i < 4; i++) {
+			tempPlayers.add(playerCollection.get(fistPlayer % 4));
+			fistPlayer++;
+		}
+		return tempPlayers;
 	}
 }

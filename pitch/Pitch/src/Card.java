@@ -112,6 +112,7 @@ public class Card {
 			case 0:{
 				if(this.suit == 2 && value == 9){
 					this.hiearchy = 13;
+					this.pointVal = 1;
 					return true;
 				}
 				else return false;
@@ -119,6 +120,7 @@ public class Card {
 			case 1:{
 				if(this.suit == 3 && value == 9){
 					this.hiearchy = 13;
+					this.pointVal = 1;
 					return true;
 				}
 				else return false;
@@ -126,6 +128,7 @@ public class Card {
 			case 2:{
 				if(this.suit == 0 && value == 9){
 					this.hiearchy = 13;
+					this.pointVal = 1;
 					return true;
 				}
 				else return false;
@@ -133,6 +136,7 @@ public class Card {
 			case 3:{
 				if(this.suit == 1 && value == 9){
 					this.hiearchy = 13;
+					this.pointVal = 1;
 					return true;
 				}
 				else return false;
