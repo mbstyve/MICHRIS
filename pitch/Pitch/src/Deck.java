@@ -35,6 +35,14 @@ public class Deck {
 		}
 		iterator = 36;
 	}
+	
+	public ArrayList<Player> deal(ArrayList<Player> player){
+		for(int i = 0; i < 36; i++){
+				player.get(i % 4).getHand().add(this.getCard(i));
+		}
+		return player;
+
+	}
 		
 	public Card getCard(int i){
 		return deck.get(i);
