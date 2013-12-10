@@ -1,0 +1,28 @@
+Unity Overview
+
+Unity3D is a free game development tool that allows you to create visually rich games in an 
+easy to work IDE. It runs on javascript and C# so it would be perfect for what we would want
+to do. If you dont want to do javascript, c# is essentially the same as java, just a few
+different naming conventions and such. If you already ahve the server, I will provide a tutorial
+on how to write a script to connect a game to the server and how it is done using unity. 
+
+Unity will allow us to not only write code, but also provides a drag and drop screen if we want
+to make the game aesthetically pleasing and we wont have to worry about making it, then debugging 
+it to make sure things end up in the correct place. Its all in real time. TO give you a demo, i'll
+send you a link to a game that I have helped someone build as a part of the Game Development Club 
+that I am in(might have to show you this later as I dont currently have the updated link). 
+
+This is a link to a description of how a guy created a card game in unity3D:
+http://forum.unity3d.com/threads/161961-WIP-Multiplayer-card-game-in-3D
+
+This is a link to a tutorial on how to make a game available as an online game using a server:
+http://www.paladinstudios.com/2013/07/10/how-to-create-an-online-multiplayer-game-with-unity/
+
+If we ever wanted to import video into the game, we could do it relatvely easily using this:
+https://www.assetstore.unity3d.com/#/content/7447
+
+Unity3D is for Mac and Windows so we wont run into any issues there either, it is also free.
+http://unity3d.com/unity/download
+
+If it doesnt automatically detect you are one a Mac, there is a link right below the paragraph 
+saying "On a Mac?" click it and it should show you the new download.
