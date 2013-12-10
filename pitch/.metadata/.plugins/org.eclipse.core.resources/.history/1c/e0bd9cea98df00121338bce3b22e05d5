@@ -1,0 +1,24 @@
+
+public class GameFlow {
+	private int team1GamePoints = 0;
+	private int team2GamePoints = 0; 
+	
+	
+	public void playHand(suit){
+		for(Player player:playerCollection){
+			if(player.canPlay(suit)){
+				Card card = new Card();
+				card = player.selectCard();
+			}
+		}
+	}
+	
+	public void setPointers(int suitIdx){
+		for(Player player : playerCollection){
+			for(Card card : player.getHand()){
+				
+			}
+		}
+	}
+
+}

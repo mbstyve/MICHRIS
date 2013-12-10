@@ -1,0 +1,45 @@
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * 
+ */
+
+/**
+ * @author Michael
+ *
+ */
+public class Deck {
+
+	private List<Card> deck = new ArrayList<Card>();
+	/**
+	 * 
+	 */
+	public Deck() {
+		for(int i = 1; i < 5; i++){
+			for(int j = 2; j < 15; j++){
+				Card card = new Card(i, j);
+				deck.add(card);
+			}
+		}
+	}
+	
+	public Card getCard(int i){
+		return deck.get(i);
+	}
+	public void ShuffleDeck(){
+		Collections.shuffle(deck);
+	}
+
+	public List<Card> getDeck() {
+		return deck;
+	}
+
+	public void setDeck(List<Card> deck) {
+		this.deck = deck;
+	}
+
+	
+}

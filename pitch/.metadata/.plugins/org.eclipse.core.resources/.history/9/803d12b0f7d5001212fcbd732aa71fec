@@ -1,0 +1,32 @@
+import java.util.List;
+
+
+public class Hand {
+	private List<Card> hand;
+
+	public void addCard(Card card) {	
+		hand.add(card);
+	}
+
+	public Hand() {
+		super();
+	}
+	
+	public Card playCard(int i){
+		return hand.remove(i);
+	}
+	
+	public void orderHand(){
+		//TODO:
+	}
+	
+	public void displayHand(){
+		for(Card card : hand){
+			System.out.print(card.getValue());
+			System.out.print(" of ");
+			System.out.println(card.getSuit());
+
+
+		}
+	}
+}

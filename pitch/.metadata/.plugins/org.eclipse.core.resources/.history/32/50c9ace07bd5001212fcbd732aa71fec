@@ -1,0 +1,18 @@
+
+public class Deal {
+	private Deck deck = new Deck();
+
+	public Deal() {
+		super();
+		deck.ShuffleDeck();
+	}
+
+	public Deck getDeck() {
+		return deck;
+	}
+
+	public void setDeck(Deck deck) {
+		this.deck = deck;
+	}
+	
+}

@@ -1,0 +1,35 @@
+
+public class Player {
+	private Hand hand;
+	private int bid; 
+	
+	public Player() {
+		super();
+		hand = new Hand();
+		bid = 0;
+	}
+
+	public Hand getHand() {
+		return hand;
+	}
+
+	public void setHand(Hand hand) {
+		this.hand = hand;
+		this.hand.orderHand();
+	}
+
+	public int getBid() {
+		return bid;
+	}
+
+	public void setBid(int bid) {
+		this.bid = bid;
+	}
+
+	public void showHand() {
+		hand.displayHand();
+	}
+	
+	
+	
+}

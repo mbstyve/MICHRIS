@@ -1,0 +1,31 @@
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Scanner;
+
+
+public class GameBid {
+	
+	private int highBid = 3;
+	private int highestBidIdx = 3;
+	private Collection<Player> playerCollection = new ArrayList<Player>();
+	
+	public void initializeBidSequence(){
+		for(int i = 0; i < 4; i++){
+			getPlayerBid(i);
+		}
+	}
+	
+	public void getPlayerBid(int newHighIdx){
+		Scanner reader = new Scanner(System.in);
+		System.out.print("Enter your bid, the high is ");
+		System.out.println(highBid);
+		//get user input for a
+		int newBid = reader.nextInt();
+		if(newBid > highBid){
+			highBid = newBid; 
+			highestBidIdx = newHighIdx;
+			//player.setBid(highBid);
+		}
+		return highBid;
+	}
+}

@@ -1,0 +1,24 @@
+
+public class GamePlay {
+	private Player pOne = new Player();
+	private Player pTwo = new Player();
+	private Player pThree = new Player();
+	private Player pFour = new Player();
+	int main(){
+		Player pOne = new Player();
+		Player pTwo = new Player();
+		Player pThree = new Player();
+		Player pFour = new Player();
+		Deal deal = new Deal();
+		pOne.setHand(deal.getPlayerOneHand());
+		pTwo.setHand(deal.getPlayerTwoHand());
+		pThree.setHand(deal.getPlayerThreeHand());
+		pFour.setHand(deal.getPlayerFourHand());
+		
+		System.out.println("Player 1 hand"); 
+		pOne.showHand();
+		
+		return 0;
+	}
+}
+

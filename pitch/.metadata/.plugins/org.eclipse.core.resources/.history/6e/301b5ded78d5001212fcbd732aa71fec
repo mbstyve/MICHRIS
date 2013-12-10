@@ -1,0 +1,12 @@
+import java.util.List;
+
+
+public class Deal {
+	private List<Card> hand;
+
+	public Deal(List<Card> hand) {
+		super();
+		this.hand = hand;
+	}
+	
+}

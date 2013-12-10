@@ -1,0 +1,37 @@
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
+/**
+ * 
+ */
+
+/**
+ * @author Michael
+ *
+ */
+public class Deck {
+
+	private Collection<Card> deck;
+	/**
+	 * 
+	 */
+	public Deck() {
+		
+	}
+	
+	public void ShuffleDeck(){
+		List<Card> deck = new ArrayList<Card>();
+		for(int i = 1; i < 5; i++){
+			for(int j = 2; j < 15; j++){
+				Card card = new Card(i, j);
+				deck.add(card);
+			}
+		}
+		Collections.shuffle(deck);
+
+	}
+
+}
