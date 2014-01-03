@@ -13,13 +13,12 @@ function handler (req, res) {
 	var pathname = url.parse(req.url).pathname; 
 	var url_parts = url.parse(req.url, true);
 	var param = url_parts.params;
-	console.log("Request for " + pathname + " received.");
+	//console.log("Request for " + pathname + " received.");
 	var params = pathname.split("/");
-	console.log(params);
+	//console.log(params);
 
 	if(pathname == "/cards/"+params[2])
 	{
-		console.log("WOOOOOOOOO")
 		fs.readFile(__dirname + '/cards/'+params[2],
 		function (err, data) {
 	    	if (err) {
@@ -57,109 +56,254 @@ function handler (req, res) {
 	    res.end(data);
 	  });
 	} 
-	console.log(pathname)
+	//console.log(pathname)
  	
 }
 
-console.log("Code Running...");
+console.log("Server Running...");
 
 io.set('log level', 1); 
  
 io.sockets.on('connection', function(socket){
   //send data to client
-  setInterval(function(){
-    socket.emit('date', {'date': new Date()});
-  }, 1000);
+  // setInterval(function(){
+  //   socket.emit('date', {'date': new Date()});
+  // }, 1000);
+
+  // setInterval(function(){
+  //   io.sockets.in('T0').emit('beginBid', bidInfo)}, 1000);
+
+  // setInterval(function(){
+  //   io.sockets.in('T0').emit('game', gameInfo)}, 5000);
  
-  //recieve client data
-  socket.on('client_data', function(data){
-    process.stdout.write(data.letter);
+  // //recieve client data
+  // socket.on('client_data', function(data){
+  //   process.stdout.write(data.letter);
+  // });
+
+  socket.on('add_Player', function(name){
+    if(status.tablesFull){
+      addTable();
+    }
+
+    socket.join(status.numTables-1);
+    var player = createPlayer(name, socket.id);
+  	
+    console.log("player added id: "+player.id);
+
+  	socket.emit('player', player);
+
+    if(status.tablesFull){
+      for(var i = 0; i < 4; i++){
+        console.log(tables[status.numTables-1].players[i].roomID+" distributing...");
+
+        io.sockets.sockets[tables[status.numTables-1].players[i].roomID].emit('hand', tables[status.numTables-1].players[i].hand);
+        
+        console.log(tables[status.numTables-1].players[i].roomID+" distributed");
+      
+      }
+      
+      console.log("Emitting bidInfo to all clients");
+
+      var table = tables[status.numTables-1];
+      io.sockets.emit('bid', table.bidInfo); //sockets.sockets[table.players[(table.dealer+1)%4].roomID]
+    }
+
   });
 
-  socket.on('player_name', function(name){
-  	console.log('in server...');
-  	var result = addPlayerToTable(name);
-  	if (result == -1){
-  		console.log("table full");
-  	}
-  	else {
-  		console.log("player added id: "+result);
-  		socket.emit('player', result.id);
-  	}
-  });
-   socket.on('deal', function(id){
-   	socket.emit('hand', table.players[id].hand);
-   	console.log(table.players[id].hand);
-  });
-   socket.on('bid', function(id, bid){
-   	bidcounter++;
-   	if(bid > highBid && bid <= 10){
-   		bidInfo.highBid = bid;
-   		bidInfo.highBidder = id;
+
+  // socket.on('deal', function(id){
+  //  	socket.emit('hand', table.players[id].hand);
+  //  	console.log(table.players[id].hand);
+  // });
+
+
+   socket.on('bid', function(bidPacket){
+    var table = tables[bidPacket.table];
+
+    table.bidcounter++;
+    table.bidInfo.curBidder= (table.bidInfo.curBidder+1)%4;
+
+   	if(bidPacket.bid > table.bidInfo.highBid && bidPacket.bid <= 10){
+   		table.bidInfo.highBid = bidPacket.bid;
+   		table.bidInfo.highBidder = bidPacket.id;
    	}
-   	socket.emit('bid', table.players[id].hand);
-   	console.log(table.players[id].hand);
+    if(table.bidcounter >= 4){
+      console.log("Player "+table.bidInfo.highBidder+" won the bid");
+      table.bidInfo.bidWinner = table.bidInfo.highBidder;
+    }
+    io.sockets.emit('bid', table.bidInfo);
   });
 
+   socket.on('suit', function(suitPacket){
 
+    console.log("**********The Suit is "+suitPacket.suit+"***********");
+
+    table = tables[suitPacket.table];
+    table.bidInfo.suit = suitPacket.suit;
+    table.bidInfo.suitId = suitPacket.id;
+    table.gameInfo.turn = table.bidInfo.bidWinner;
+    io.sockets.emit('bid', table.bidInfo); //TODO: for multiple tablesio.sockets.in('table').emit('suit', bidInfo);
+
+    callRiverDeal(table);
+  });
+
+  //  socket.on('cardPlayed', function(card){
+  //   gameInfo.curPlayed.push(card);
+  //  })
 });
 
 //game code
-//var tables [];
-var tablesFull = false;
+var status = new Object();
+status.numTables=0;
+status.tablesFull=true;
+status.clients;
 
-var table = new Object();
-table.num_players = 0;
-table.id =0;
-table.deck = shuffleDeck(); 
-table.players = [];
+var tables = [];
+// var clients;
+// var tablesFull = false;
+// var tableNum = 0;
 
-var bidcounter = 0;
+function addTable(){
 
-var bidInfo = new Object();
-bidInfo.highBid=3;
-bidInfo.highBidder=0;
-bidInfo.suit=0;
+  console.log("Creating new table");
 
-for(var i = 0; i < 3; i++){
-	var player = new Object();
-    player.id = table.num_players;
-    player.hand = [];
-    player.points = 0;
-    table.players.push(player);
-    table.num_players++;
+  var table = new Object();
+  table.num_players = 0;
+  table.id =0;
+  table.deck = shuffleDeck(); 
+  table.players = [];
+  table.dealer = 0;
+  table.bidcounter = 0;
+  
+  var bidInfo = new Object();
+  bidInfo.curBidder=1;
+  bidInfo.highBid=3;
+  bidInfo.highBidder=-1;
+  bidInfo.suit=-1;
+  bidInfo.suitId = -1;
+  bidInfo.bidWinner=-1;
+
+  var gameInfo = new Object();
+  gameInfo.gameInit = 0;
+  gameInfo.turn = -1;
+  gameInfo.curPlayed = [];
+
+
+  table.bidInfo=bidInfo;
+  table.gameInfo= gameInfo;
+  tables.push(table);
+
+  status.tablesFull = false;
+  status.numTables++;
+
+
 }
 
-function addPlayer(name){
+// var bidcounter = 3;
+
+// var bidInfo = new Object();
+// bidInfo.curBidder=1;
+// bidInfo.highBid=3;
+// bidInfo.highBidder=;
+// bidInfo.suit=-1;
+// bidInfo.bidWinner = -1;
+
+var gameInfo = new Object();
+gameInfo.gameInit = 0;
+gameInfo.turn = -1;
+gameInfo.curPlayed = [];
+
+
+function createPlayer(name, id){
     var player = new Object();
-    player.id = table.num_players;
+    player.id = tables[status.numTables-1].num_players;
     player.hand = [];
     player.points = 0;
-    table.players.push(player);
+    player.roomID = id; //For full version table.num_players
+    player.table = status.numTables-1;
+
+    console.log("num_players= "+tables[status.numTables-1].num_players);
+
+    tables[status.numTables-1].players.push(player);
+    tables[status.numTables-1].num_players++;
+
+    if(tables[status.numTables-1].num_players == 4){
+      status.tablesFull = true;
+      distrib(tables[status.numTables-1]);
+    }
+
+    console.log("Created new player: "+player.roomID);
+
     return player;
 }
 
-function addPlayerToTable(name){
-	console.log("adding player...");
-	if(table.num_players == 4){
-		return -1;
-	}
-	var player = addPlayer(name);
-	table.players.push(player);
-	table.num_players++;
-	if(table.num_players == 4){
-		tablesFull == true;
-		distrib();
-	}
-	return player;
+function callRiverDeal(table){
+  console.log(table.players[0].hand);
+  console.log(table.players[1].hand);
+  console.log(table.players[2].hand);
+  console.log(table.players[3].hand);
+
+  var num_needed=0;
+  var num_to_remove = 0;
+  var card;
+  var idxToRemove = [];
+  var tempHand;
+  var cardToRemove;
+  var cardIdx;
+
+  for(var playerIdx = 0; playerIdx < 4; playerIdx++){
+    if(playerIdx == table.bidInfo.bidWinner) continue;
+    cardIdx = 0;
+    num_needed=-3;
+    tempHand = table.players[playerIdx].hand;
+    for(var i = 0; i<9; i++){
+
+      card = table.players[playerIdx].hand[cardIdx];
+
+      console.log("Rearranging player: "+playerIdx+" card: "+cardIdx);
+      console.log(card.suit);
+      console.log(table.bidInfo.suitId);
+      if(card.suit!=table.bidInfo.suitId && card.suit!=5){ //if NOT apart of Suit or Joker
+        if(card.val!=10){ //if NOT jack
+          num_needed++;
+          table.players[playerIdx].hand.splice(cardIdx,1);
+          console.log("card removed "+card.suit);
+        } else{
+          if(card.suit+table.bidInfo.suitId!=1&&card.suit+table.bidInfo.suitId!=5){ //if NOT offJack (pretty cool way I must say)
+            num_needed++;
+            table.players[playerIdx].hand.splice(cardIdx,1);
+            console.log("card removed "+card.suit);
+          } else cardIdx++;
+        }
+      } else cardIdx++;
+    }
+    if(num_needed>=0){
+      for(var i = 0; i < num_needed; i++){
+        card = table.deck.pop();
+        table.players[playerIdx].hand.push(card);
+      }
+    } else{
+    //TODO: remove excess cards
+    }
+  }
+
+  //redistrib new hands
+  for(var i = 0; i < 4; i++){
+    console.log(table.players[i].roomID+" REdistributing...");
+
+    io.sockets.sockets[table.players[i].roomID].emit('hand', table.players[i].hand);
+    
+    console.log(table.players[i].roomID+" REdistributed");
+  
+  }
+
 }
-
-
 
  function shuffleDeck(){
      var x = -1;
      var temp;
-     deck = [];
+     var deck = [];
      //create cards and add to deck
      for(var i = 0; i < 54; i++){    
        temp = i%13;
@@ -174,11 +318,6 @@ function addPlayerToTable(name){
      }
 
      return shuffle(deck);
-
-     //distrib();
-     // for (var l = 0; l<54; l++) {
-     //   addTheImage(players[0].hand[l]);
-     // };
     }
 
 function shuffle(o){ //v1.0
@@ -186,15 +325,24 @@ function shuffle(o){ //v1.0
         return o;
     };
 
-function distrib(){
- for(var i = 0; i < 54; i++){
-   var card = deck.pop();
+function distrib(table){
+
+ console.log("Table "+(status.numTables-1)+" is full, distributing cards now...");
+  
+ for(var i = 0; i < 36; i++){
+   var card = table.deck.pop();
    table.players[i%4].hand.push(card);
  }
- sortHands();
+ sortHands(table);
+
+ console.log("P0"+table.players[0].hand);
+ console.log("P1"+table.players[1].hand);
+ console.log("P2"+table.players[2].hand);
+ console.log("P3"+table.players[3].hand);
+
 }
 
-function sortHands(){
+function sortHands(table){
  for(var i = 0; i < 4; i++){
    table.players[i].hand.sort(compare);
  }
