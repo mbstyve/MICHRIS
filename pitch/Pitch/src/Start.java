@@ -4,8 +4,12 @@ import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -34,6 +38,7 @@ public class Start extends JFrame implements ActionListener {
     JButton playerCard7 = new JButton();
     JButton playerCard8 = new JButton();
     JButton playerCard9 = new JButton();
+    String path = "cards/";
     
     JButton jbtnDeal = new JButton("Deal");
     JFrame bidFrame = new JFrame("Bid Window");
@@ -91,9 +96,23 @@ public class Start extends JFrame implements ActionListener {
         if (e.getSource() == jbtnDeal) {
         	deck.ShuffleDeck();
         	playerCollection = deck.deal(playerCollection);
+            File file;
+            BufferedImage image;
+            String newPath;
         	for(Card card : playerCollection.get(0).getHand()){
-        		
-        		playerPanel.add(new JButton(card.toString())); //new ImageIcon("cards/" + card.getSuit() + card.getHiearchy()
+        		playerPanel.add(new JButton(card.toString()));
+        		/*				newPath = path + card.getSuit() + card.getHiearchy() + ".png";
+				file = new File(newPath);
+				System.out.println(newPath);
+				try {
+					image = ImageIO.read(file);
+					playerPanel.add(new JLabel(new ImageIcon(image)));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					System.out
+							.println("Shit Didnt work: image could not be read: "
+									+ newPath);
+				}*/
         	}
             team1Status.setText("Team 1: " + pOne.teamPoints);
             team2Status.setText("Team 2: " + pTwo.teamPoints);
