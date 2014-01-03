@@ -141,7 +141,7 @@ io.sockets.on('connection', function(socket){
 
     table = tables[suitPacket.table];
     table.bidInfo.suit = suitPacket.suit;
-    table.bidInfo.suitId = suitPacket.id;
+    table.bidInfo.suitId = suitPacket.suitId;
     table.gameInfo.turn = table.bidInfo.bidWinner;
     io.sockets.emit('bid', table.bidInfo); //TODO: for multiple tablesio.sockets.in('table').emit('suit', bidInfo);
 
@@ -256,7 +256,7 @@ function callRiverDeal(table){
     if(playerIdx == table.bidInfo.bidWinner) continue;
     cardIdx = 0;
     num_needed=-3;
-    tempHand = table.players[playerIdx].hand;
+    //tempHand = table.players[playerIdx].hand;
     for(var i = 0; i<9; i++){
 
       card = table.players[playerIdx].hand[cardIdx];
@@ -264,13 +264,15 @@ function callRiverDeal(table){
       console.log("Rearranging player: "+playerIdx+" card: "+cardIdx);
       console.log(card.suit);
       console.log(table.bidInfo.suitId);
-      if(card.suit!=table.bidInfo.suitId && card.suit!=5){ //if NOT apart of Suit or Joker
+      if(card.suit!=table.bidInfo.suitId && card.suit!=4){ //if NOT apart of Suit or Joker
         if(card.val!=10){ //if NOT jack
+          console.log("Not of suit or Joker");
           num_needed++;
           table.players[playerIdx].hand.splice(cardIdx,1);
           console.log("card removed "+card.suit);
         } else{
           if(card.suit+table.bidInfo.suitId!=1&&card.suit+table.bidInfo.suitId!=5){ //if NOT offJack (pretty cool way I must say)
+            console.log("Not Off Jack");
             num_needed++;
             table.players[playerIdx].hand.splice(cardIdx,1);
             console.log("card removed "+card.suit);
@@ -282,6 +284,7 @@ function callRiverDeal(table){
       for(var i = 0; i < num_needed; i++){
         card = table.deck.pop();
         table.players[playerIdx].hand.push(card);
+        console.log("Adding Card to player "+playerIdx+" card "+i);
       }
     } else{
     //TODO: remove excess cards

@@ -287,6 +287,8 @@ function getName(){
       while(id==-1){
         suit=prompt(y);
         id = getSuitId(suit);
+        console.log("Suit "+suit);
+        console.log("ID "+id);
         y= "Invalid suit, please enter 'spades', 'clubs', 'diamonds', or 'hearts'";
       }
         x="The suit is " + suit;
@@ -299,7 +301,7 @@ function getName(){
     }
 
     function getSuitId(suitName){
-      var suit = -1;
+      //var suit = -1;
       if(suitName == "clubs"){
         return 0;
       }
