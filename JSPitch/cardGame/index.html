@@ -182,22 +182,10 @@ function getName(){
       console.log("socket");
     }
 
-    // function deal(){
-    //   socket.emit('deal', player.id);
-    //   socket.on('hand', function(hand){
-    //     console.log(hand[0].img);
-    //     player.hand = hand;
-    //     for(var i = 0; i < 9;i++){
-    //       addTheImage(hand[i]);
-    //     }
-    //   })
-
-    // }
-
     function addTheImage(card) {
       //console.log(card);
         var img = document.createElement('img');
-        img.id = "elem";
+        img.id = card.suit+""+card.val;
         img.src = card.img;
         img.onclick = function(card) { selectCard(card); };
         document.body.appendChild(img);
@@ -207,7 +195,7 @@ function getName(){
       if(playerTurn !=1){
         return;
       }
-      console.log("Player "+name+" played "+card.suit+""+card.val);
+      console.log("Player "+player.id+" played "+card.suit+""+card.val);
 
 
     // var x;
@@ -217,7 +205,7 @@ function getName(){
          //x=getName(card)+" played";
          playPacket.table = player.table;
          playPacket.card = card;
-         console.log("Card played "+card);
+         console.log("Card played "+card.suit);
          socket.emit('cardPlayed', playPacket);
          playerTurn = 0;
      //   }
