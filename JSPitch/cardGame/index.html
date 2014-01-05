@@ -7,18 +7,19 @@
 <body>
 
 	<script>
-document.write("Hello World!")
+//document.write("Hello World!")
 </script> 
 <!-- <button onclick="deal()">deal</button> -->
 <button id = "bidButton" hidden="hidden" onclick="bid()">Make Bid</button>
+<p id="name"></p>
 <p id="status">Initializing Game</p>
-<!-- <p id="turn"></p>
-  <div id="date"></div>
-  <textarea id="text"></textarea> -->
+<p id="turn"></p>
+<!-- <div id="date"></div>
+<textarea id="text"></textarea> -->
 <script>
 document.getElementById("bidButton").style.display="none";
 var host = "localhost:8080";
-var playerTurn;
+var playerTurn =0;
 var bidPacket = new Object();
   bidPacket.id = "";
   bidPacket.bid = "";
@@ -34,6 +35,10 @@ var bidPacket = new Object();
 
   var suit=-1;
   var suitId=-1;
+
+var playPacket = new Object();
+playPacket.table = "";
+playPacket.card;
 
 getName();
 function getName(){
@@ -65,6 +70,7 @@ function getName(){
     player.table = playerObj.table;
     console.log(player.id);
     document.getElementById("status").innerHTML="Table joined, waiting on other players.";
+    document.getElementById("name").innerHTML="Player "+player.id;
   });
 
   socket.on('hand', function(hand){
@@ -139,12 +145,14 @@ function getName(){
   });
 
   socket.on('game', function(gameInfo){
-    if(gameInfo.gameInit == 1){
-      if(gameInfo.turn == player.id){
+    if(gameInfo.turn == player.id){
         alert("Its your Turn!");
         playerTurn =1;
-      }
       document.getElementById('turn').innerHTML="Player "+gameInfo.turn+"'s turn";
+
+
+    } else {
+      document.getElementById('turn').innerHTML="Player "+gameInfo.turn+"'s turn";      
     }
   })
    
@@ -199,20 +207,26 @@ function getName(){
       if(playerTurn !=1){
         return;
       }
-      console.log(card.suit)
+      console.log("Player "+name+" played "+card.suit+""+card.val);
 
-     var x;
-     var r=confirm("You selected "+getName(card));
-     if (r==true)
-       {
-         x=getName(card)+" played";
-         socket.emit('cardPlayed', card);
-       }
-     else
-       {
-         x="You pressed Cancel!";
-       }
-    document.getElementById("card").innerHTML=x;
+
+    // var x;
+     // var r=confirm("You selected "+card));
+     // if (r==true)
+     //   {
+         //x=getName(card)+" played";
+         playPacket.table = player.table;
+         playPacket.card = card;
+         console.log("Card played "+card);
+         socket.emit('cardPlayed', playPacket);
+         playerTurn = 0;
+     //   }
+     // else
+     //   {
+     //    // x="You pressed Cancel!";
+     //   }
+   // document.getElementById("card").innerHTML=x;
+
     }
 
     // function getName(card){

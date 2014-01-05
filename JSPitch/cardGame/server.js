@@ -119,38 +119,57 @@ io.sockets.on('connection', function(socket){
 
 
    socket.on('bid', function(bidPacket){
-    var table = tables[bidPacket.table];
+    //var table = tables[bidPacket.table];
 
-    table.bidcounter++;
-    table.bidInfo.curBidder= (table.bidInfo.curBidder+1)%4;
+    tables[bidPacket.table].bidcounter++;
+    tables[bidPacket.table].bidInfo.curBidder= (tables[bidPacket.table].bidInfo.curBidder+1)%4;
 
-   	if(bidPacket.bid > table.bidInfo.highBid && bidPacket.bid <= 10){
-   		table.bidInfo.highBid = bidPacket.bid;
-   		table.bidInfo.highBidder = bidPacket.id;
+   	if(bidPacket.bid > tables[bidPacket.table].bidInfo.highBid && bidPacket.bid <= 10){
+   		tables[bidPacket.table].bidInfo.highBid = bidPacket.bid;
+   		tables[bidPacket.table].bidInfo.highBidder = bidPacket.id;
    	}
-    if(table.bidcounter >= 4){
-      console.log("Player "+table.bidInfo.highBidder+" won the bid");
-      table.bidInfo.bidWinner = table.bidInfo.highBidder;
+    if(tables[bidPacket.table].bidcounter >= 4){
+      console.log("Player "+tables[bidPacket.table].bidInfo.highBidder+" won the bid");
+      tables[bidPacket.table].bidInfo.bidWinner = tables[bidPacket.table].bidInfo.highBidder;
+      tables[bidPacket.table].gameInfo.turn= tables[bidPacket.table].bidInfo.highBidder;
+      tables[bidPacket.table].gameInfo.startedHand = tables[bidPacket.table].bidInfo.highBidder;
     }
-    io.sockets.emit('bid', table.bidInfo);
+    io.sockets.emit('bid', tables[bidPacket.table].bidInfo);
   });
 
    socket.on('suit', function(suitPacket){
 
     console.log("**********The Suit is "+suitPacket.suit+"***********");
 
-    table = tables[suitPacket.table];
-    table.bidInfo.suit = suitPacket.suit;
-    table.bidInfo.suitId = suitPacket.suitId;
-    table.gameInfo.turn = table.bidInfo.bidWinner;
-    io.sockets.emit('bid', table.bidInfo); //TODO: for multiple tablesio.sockets.in('table').emit('suit', bidInfo);
+    //table = tables[suitPacket.table];
+    tables[suitPacket.table].bidInfo.suit = suitPacket.suit;
+    tables[suitPacket.table].bidInfo.suitId = suitPacket.suitId;
+    tables[suitPacket.table].gameInfo.turn = tables[suitPacket.table].bidInfo.bidWinner;
 
-    callRiverDeal(table);
+    console.log("Turn "+tables[suitPacket.table].gameInfo.turn);
+
+    tables[suitPacket.table].gameInfo.startedHand = tables[suitPacket.table].bidInfo.bidWinner;
+
+    console.log("Started Hand "+tables[suitPacket.table].gameInfo.startedHand);
+
+    io.sockets.emit('bid', tables[suitPacket.table].bidInfo); //TODO: for multiple tablesio.sockets.in('table').emit('suit', bidInfo);
+
+    console.log("Dealing Rvier");
+
+    callRiverDeal(tables[suitPacket.table]);
+
+    io.sockets.emit('game', tables[suitPacket.table].gameInfo);
+
   });
 
-  //  socket.on('cardPlayed', function(card){
-  //   gameInfo.curPlayed.push(card);
-  //  })
+   socket.on('cardPlayed', function(playPacket){
+
+    console.log("Card Recieved "+playPacket.card);
+
+    updateGameInfo(playPacket.table, playPacket.card);
+    io.sockets.emit('game', tables[playPacket.table].gameInfo);
+
+   })
 });
 
 //game code
@@ -188,6 +207,12 @@ function addTable(){
   gameInfo.gameInit = 0;
   gameInfo.turn = -1;
   gameInfo.curPlayed = [];
+  gameInfo.startedHand;
+  gameInfo.team1HandPoints =0;
+  gameInfo.team2HandPoints =0;
+  gameInfo.team1GamePoints =0;
+  gameInfo.team2GamePoints =0;
+  gameInfo.gameOver = 0;
 
 
   table.bidInfo=bidInfo;
@@ -253,7 +278,6 @@ function callRiverDeal(table){
   var cardIdx;
 
   for(var playerIdx = 0; playerIdx < 4; playerIdx++){
-    if(playerIdx == table.bidInfo.bidWinner) continue;
     cardIdx = 0;
     num_needed=-3;
     //tempHand = table.players[playerIdx].hand;
@@ -280,6 +304,9 @@ function callRiverDeal(table){
         }
       } else cardIdx++;
     }
+
+    if(playerIdx == table.bidInfo.bidWinner) continue;
+
     if(num_needed>=0){
       for(var i = 0; i < num_needed; i++){
         card = table.deck.pop();
@@ -288,6 +315,10 @@ function callRiverDeal(table){
       }
     } else{
     //TODO: remove excess cards
+    }
+    for(card in table.deck){
+      table.deck.pop();
+      table.players[table.bidInfo.bidWinner].hand.push(card);
     }
   }
 
@@ -298,10 +329,108 @@ function callRiverDeal(table){
     io.sockets.sockets[table.players[i].roomID].emit('hand', table.players[i].hand);
     
     console.log(table.players[i].roomID+" REdistributed");
-  
+
+    console.log("Begin Play!!!");
+
   }
 
 }
+
+
+
+function updateGameInfo(tableIdx, card){
+  console.log("Updating Game Status...");
+  var table = tables[tableIdx];
+  var gameInfo  = table.gameInfo;
+  var winningIdx
+
+  gameInfo.turn = (gameInfo.turn+1)%4; //change player turn
+
+  gameInfo.curPlayed.push(card);
+
+    //check to see if current turn is the player who started the hand
+  if(gameInfo.curPlayed.length ==4){
+    //find winnter
+    console.log("hand fin");
+    //find winning card index and distribute points
+    winningIdx = getWinningIndex(gameInfo.curPlayed);
+
+    console.log("Hand Winner is Player "+winningIdx);
+
+    //io.sockets.emit('game', tables[tableIdx].gameInfo);
+     return;
+  }
+
+  if(gameInfo.curPlayed.length <4){
+  //  io.sockets.emit('game', table.gameInfo);
+    return;
+  }
+
+  //check to see if the players are out of cards
+  if(table.players[gameInfo.turn].hand.length ==0){
+    //end of game
+    gameInfo.gameOver ==1;
+    console.log("Game Over Bitch")
+  }
+}
+
+
+function getWinningIndex(table){
+  var highCard;
+  var highCardVal;
+  var pointsWon;
+  var cards = table.gameInfo.curPlayed;
+  for(var i = 0; i < 4; i++){
+    card = cards[i];
+    if(card.suit == table.bidInfo.suitId || card.suit==5 ||
+      (card.val==11 && 
+        (card.suit+table.bidInfo.suitId==1||
+          card.suit+table.bidInfo.suitId==5))){
+      //card is valid
+      if(card.val > highCardVal){
+        highCard = i;
+        highCardVal = card.val;
+      } else if(card.val == highCardVal){
+        //2 jacks were played
+        if(card.suit==bidInfo.suitId){
+          //select the one that is of suit
+          highCard = i;
+          highCardVal = card.val;
+        }
+      }
+
+      //add the point values
+      switch (card.val){
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 14:
+          pointsWon ++;
+          break;
+        case 3:
+          pointsWon +=3;
+          break;
+        case 2:
+          if((table.gameInfo.startedHand+i)%4 == 0){
+            table.gameInfo.team1HandPoints++;
+          } else table.gameInfo.team2HandPoints++;
+          break;
+      }
+    }
+  }
+
+  //add points to the correct team
+  if((table.gameInfo.startedHand+highCard)%4 == 0){
+            table.gameInfo.team1HandPoints = pointsWon;
+  } else table.gameInfo.team2HandPoints = pointsWon;
+
+  table.gameInfo.turn = highCard;
+  table.gameInfo.startedHand = highCard;
+  return highCard;
+}
+
+
 
  function shuffleDeck(){
      var x = -1;
