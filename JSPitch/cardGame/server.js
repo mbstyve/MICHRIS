@@ -225,20 +225,6 @@ function addTable(){
 
 }
 
-// var bidcounter = 3;
-
-// var bidInfo = new Object();
-// bidInfo.curBidder=1;
-// bidInfo.highBid=3;
-// bidInfo.highBidder=;
-// bidInfo.suit=-1;
-// bidInfo.bidWinner = -1;
-
-var gameInfo = new Object();
-gameInfo.gameInit = 0;
-gameInfo.turn = -1;
-gameInfo.curPlayed = [];
-
 
 function createPlayer(name, id){
     var player = new Object();

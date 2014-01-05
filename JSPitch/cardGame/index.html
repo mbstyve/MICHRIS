@@ -85,9 +85,11 @@ function getName(){
 
         player.hand = hand;
         var handLength = hand.length;
+        var xPixel = 10;
         console.log(handLength);
         for(var i = 0; i < handLength;i++){
-          addTheImage(hand[i]);
+          addTheImage(hand[i], xPixel);
+          xPixel = xPixel + 90;
         }
   })
 
@@ -194,13 +196,26 @@ function getName(){
 
     // }
 
-    function addTheImage(card) {
+    function addTheImage(card, idx) {
       //console.log(card);
-        var img = document.createElement('img');
+        var canvas = document.getElementById('myCanvas');
+        var c = canvas.getContext('2d');
+        var img = new Image();
         img.id = "elem";
         img.src = card.img;
+        img.addEventListener('load', function () {
+          c.drawImage(this, idx, 10); },false);
+         
+
+         //img.addEventListener("click", function() {console.log("card was clicked on");
+          //selectCard(card);
+        //});
+
         img.onclick = function(card) { selectCard(card); };
-        document.body.appendChild(img);
+
+        //document.body.appendChild(img);
+
+        
     }
 
     function selectCard(card){
@@ -343,6 +358,23 @@ function removeElement(div) {
 
     </script>
 
+
+<canvas id="myCanvas" width="1000" height="1000">Your browser dont support dis shit!</canvas>
+
+<script>
+    var canvas = document.getElementById('myCanvas');
+    var c = canvas.getContext('2d');
+
+    c.fillStyle = 'green';
+    c.fillRect(0,0,1000,1000);
+
+    var deckStatic = new Image();
+    deckStatic.src = "http://michaelstyvejr.com/cards/b2fv.png";
+        deckStatic.addEventListener('load', function () {
+          c.drawImage(this, 300, 300); },false);
+         
+    
+  </script>
 
 </body>
 </html>
