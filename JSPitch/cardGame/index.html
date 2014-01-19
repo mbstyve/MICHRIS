@@ -14,9 +14,37 @@
 <p id="name"></p>
 <p id="status">Initializing Game</p>
 <p id="turn"></p>
+<h1></h1>
+  <div id="table">
+  <img id="table0" src="">
+  <img id="table1" src="">
+  <img id="table2" src="">
+  <img id="table3" src="">
+</div>
+
+<h1></h1>
+<img id="card0" src="">
+<img id="card1" src="">
+<img id="card2" src="">
+<img id="card3" src="">
+<img id="card4" src="">
+<img id="card5" src="">
+<img id="card6" src="">
+<img id="card7" src="">
+<img id="card8" src="">
+
+
 <!-- <div id="date"></div>
 <textarea id="text"></textarea> -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+</script>
 <script>
+$(document).ready(function(){
+  for(var i =0; i < 9; i++){
+    $("#card"+i).hide();
+  } 
+});
+
 document.getElementById("bidButton").style.display="none";
 var host = "localhost:8080";
 var playerTurn =0;
@@ -86,9 +114,9 @@ function getName(){
         player.hand = hand;
         var handLength = hand.length;
         console.log(handLength);
-        for(var i = 0; i < handLength;i++){
-          addTheImage(hand[i]);
-        }
+        //for(var i = 0; i < handLength;i++){
+          addTheImages();
+        //}
   })
 
   socket.on('bid', function(bidInfo){
@@ -145,6 +173,13 @@ function getName(){
   });
 
   socket.on('game', function(gameInfo){
+    for(var i = 0; i < gameInfo.curPlayed.length;i++){
+        $('#table'+i).attr('src', gameInfo.curPlayed[i].img);
+        $('#table'+i).show();
+    }
+    for(i;i<4;i++){
+      $('#table'+i).hide();
+    }
     if(gameInfo.turn == player.id){
         alert("Its your Turn!");
         playerTurn =1;
@@ -182,27 +217,59 @@ function getName(){
       console.log("socket");
     }
 
-    function addTheImage(card) {
-      //console.log(card);
-        var img = document.createElement('img');
-        img.id = card.suit+""+card.val;
-        img.src = card.img;
-        img.onclick = function(card) { selectCard(card); };
-        document.body.appendChild(img);
+    function addTheImages() {
+      var idx;
+      for(var i = 0; i < 9;i++){
+        $('#card'+i).hide();
+      }
+      for(var i = 0; i < player.hand.length;i++){
+        //idx = i;
+        $('#card'+i).attr('src', player.hand[i].img);
+        $('#card'+i).show();
+        $('#card'+i).click(function(){
+          console.log(this.id);
+          idx = this.id.substr(4,1);//selectCard(idx)
+
+          //check to see if the select was for playing the card 
+          if(playerTurn==1){
+            selectCard(idx);
+          } else if(playerDiscard == 1){
+            discard(idx);
+          }
+        });
+        // if(player.handLength==6){
+        //   $('#card6').hide();
+        //   $('#card7').hide();
+        //   $('#card8').hide();
+        // }
+      }
+        // var img = document.createElement('img');
+        // img.id = card.suit+""+card.val;
+        // img.src = card.img;
+        // img.onclick = function(card) { selectCard(card); };
+        // document.body.appendChild(img);
+
+        //
+
     }
 
-    function selectCard(card){
-      if(playerTurn !=1){
-        return;
-      }
+    function discard(idx){
+      console.log(idx+" discarded");
+    }
+
+    function selectCard(idx){
+      var card = player.hand[idx];
+      $('#card'+idx).hide();
+      console.log("Card"+idx+" selected");
       console.log("Player "+player.id+" played "+card.suit+""+card.val);
+      playerTurn = 0;
 
 
     // var x;
      // var r=confirm("You selected "+card));
      // if (r==true)
      //   {
-         //x=getName(card)+" played";
+       //  x=getName(card)+" played";
          playPacket.table = player.table;
          playPacket.card = card;
          console.log("Card played "+card.suit);
