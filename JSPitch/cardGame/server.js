@@ -391,6 +391,8 @@ function updateGameInfo(tableIdx, card){
   //var gameInfo  = table.gameInfo;
   var winningIdx;
 
+  tables[tableIdx].players[tables[tableIdx].gameInfo.turn].hand.splice(indexOf(card),1);
+
   tables[tableIdx].gameInfo.turn = (tables[tableIdx].gameInfo.turn+1)%4; //change player turn
 
   tables[tableIdx].gameInfo.curPlayed.push(card);
@@ -416,7 +418,7 @@ function updateGameInfo(tableIdx, card){
   //check to see if the players are out of cards
   if(tables[tableIdx].players[gameInfo.turn].hand.length ==0){
     //end of hand
-    console.log("Hand Over Bitch");
+    console.log("Hand Over");
     
 
     //add points

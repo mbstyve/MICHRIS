@@ -14,6 +14,8 @@
 <p id="name"></p>
 <p id="status">Initializing Game</p>
 <p id="turn"></p>
+<p id="gameScore"></p>
+<p id="handScore"></p>
 <h1></h1>
   <div id="table">
   <img id="table0" src="">
@@ -48,6 +50,10 @@ $(document).ready(function(){
 document.getElementById("bidButton").style.display="none";
 var host = "localhost:8080";
 var playerTurn =0;
+var team1HandScore=0;
+var team2HandScore=0;
+var team1GameScore=0;
+var team2GameScore=0;
 var bidPacket = new Object();
   bidPacket.id = "";
   bidPacket.bid = "";
@@ -180,6 +186,8 @@ function getName(){
     for(i;i<4;i++){
       $('#table'+i).hide();
     }
+
+   // $('#handScore').text(gameInfo.team1HandPoints+" : "+team2HandPoints);
     if(gameInfo.turn == player.id){
         alert("Its your Turn!");
         playerTurn =1;
@@ -233,7 +241,7 @@ function getName(){
           //check to see if the select was for playing the card 
           if(playerTurn==1){
             selectCard(idx);
-          } else if(playerDiscard == 1){
+         // } else if(playerDiscard == 1){
             discard(idx);
           }
         });
@@ -259,71 +267,41 @@ function getName(){
 
     function selectCard(idx){
       var card = player.hand[idx];
+
+      if(!cardIsValid(card)){
+        for(var i = 0; i < player.hand.length;i++){
+          if(cardIsValid(player.hand[i]))return;
+        }
+      }
+
+      //card is playable
+
+      //remove card from hand
+      player.hand.splice(idx,1);
+
+      //send card
       $('#card'+idx).hide();
       console.log("Card"+idx+" selected");
       console.log("Player "+player.id+" played "+card.suit+""+card.val);
       playerTurn = 0;
-
-
-    // var x;
-     // var r=confirm("You selected "+card));
-     // if (r==true)
-     //   {
-       //  x=getName(card)+" played";
-         playPacket.table = player.table;
-         playPacket.card = card;
-         console.log("Card played "+card.suit);
-         socket.emit('cardPlayed', playPacket);
-         playerTurn = 0;
-     //   }
-     // else
-     //   {
-     //    // x="You pressed Cancel!";
-     //   }
-   // document.getElementById("card").innerHTML=x;
+      playPacket.table = player.table;
+      playPacket.card = card;
+      console.log("Card played "+card.suit);
+      socket.emit('cardPlayed', playPacket);
+      playerTurn = 0;
 
     }
 
-    // function getName(card){
-    //  var suitName = "nothing";
-    //  var valName = "nothing";
-
-    //  if(card.suit == 0){
-    //    suitName = "clubs";
-    //  }
-    //  if(card.suit == 1){
-    //    suitName = "spades";
-    //  }
-    //  if(card.suit == 2){
-    //    suitName = "hearts";
-    //  }
-    //  if(card.suit == 3){
-    //    suitName = "diamonds";
-    //  }
-    //  if(card.suit== 4){
-    //    suitName = "Joker";
-    //    if(card.val == 0){
-    //      valName = "low";
-    //    } else valName = "high";
-    //    return valName + " " + suitName
-    //  }
-    //  if(card.val < 9){
-    //    valName = card.val;
-    //  }
-    //  if(card.val == 9){
-    //    valName = "Jack";
-    //  }
-    //  if(card.val == 10){
-    //    valName = "Queen";
-    //  }
-    //  if(card.val == 11){
-    //    valName = "King";
-    //  }
-    //  if(card.val==12){
-    //    valName = "Ace";
-    //  }
-    //  return valName+" of "+suitName;
-    // }
+    function cardIsValid(card){
+      if(card.suit == suit || card.suit==5) return 1;
+      if(card.val==11){
+        if(card.suit+suit==1||
+          card.suit+suit==5){
+          return 1;
+        }
+      }
+      return 0;
+    }
 
     function bid(){
       //var x = "Please enter your bid. Player "+highBidder+" has the bid with "+highBid". ('0' for pass)";
@@ -401,22 +379,4 @@ function removeElement(div) {
 
 </body>
 </html>
-
-
-
-
-<!-- <canvas id="backgroundCanvas">
-    Your browser doesn't support HTML5. Please install Internet Explorer 9 :
-    <br />
-    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie9_bow_Bing&WT.srch=1&mtag=SearBing">
-        http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie9_bow_Bing&WT.srch=1&mtag=SearBing</a>
-</canvas>
-
-<script type="text/javascript" src="background.js"></script>
-
-<script type="text/javascript" src="game.js"></script>
-<svg id="svgRoot">
-<circle cx="100" cy="100" r="10" id="ball" />
-<rect id="pad" height="15px" width="150px" x="200" y="200" rx="10" ry="20"/>
-</svg> 
 
