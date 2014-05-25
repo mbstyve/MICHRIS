@@ -388,10 +388,16 @@ function updateGameInfo(tableIdx, card){
   console.log("Card suit= "+card.suit);
   console.log("Card val= "+card.val);
   //var table = tables[tableIdx];
-  //var gameInfo  = table.gameInfo;
+  //var gameInfo  = table.gameInfo
   var winningIdx;
 
-  tables[tableIdx].players[tables[tableIdx].gameInfo.turn].hand.splice(indexOf(card),1);
+  
+
+  for(var i = 0, len = tables[tableIdx].players[tables[tableIdx].gameInfo.turn].hand.length; i < len; i++) {
+    if (tables[tableIdx].players[tables[tableIdx].gameInfo.turn].hand.card === card) {
+        tables[tableIdx].players[tables[tableIdx].gameInfo.turn].hand.splice(i,1);
+    }
+}
 
   tables[tableIdx].gameInfo.turn = (tables[tableIdx].gameInfo.turn+1)%4; //change player turn
 
@@ -478,7 +484,7 @@ function getWinningIndex(table){
         highCardVal = card.val;
       } else if(card.val == highCardVal){
         //2 jacks were played
-        if(card.suit==bidInfo.suitId){
+        if(card.suit==table.bidInfo.suitId){
           //select the one that is of suit
           highCard = i;
           highCardVal = card.val;
