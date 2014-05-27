@@ -249,6 +249,7 @@ function getName(){
 
   socket.on('suit', function(bidInfo){
     alert("Player "+bidInfo.bidWinner+" won the bid with "+bidInfo.highBid+". The suit is "+bidInfo.suit);
+    suit = bidInfo.suit;
   });
 
   socket.on('game', function(gameInfo){
