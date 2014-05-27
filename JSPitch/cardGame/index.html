@@ -3,6 +3,64 @@
 <head>
   <script src="/socket.io/socket.io.js"></script>
    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script> -->
+      <style>
+
+          #table {
+            width:100%;
+            height:600px;
+            background-color: green;
+          }
+
+          #centerTable{
+            position: relative;
+            bottom: -50px;
+            left: 25%;
+            width:50%;
+            height:370px;
+            background-color: green;
+          }
+
+          #userHand{
+            position: relative;
+            bottom: -120px;
+            left: 25%;
+            width:50%;
+            height:100px;
+            background-color: green;
+          }
+
+          #table0{
+            position:absolute;
+            left:45%;
+            width:60px;
+            height: 100px;
+          }
+
+          #table1{
+            float:left;
+            width:60px;
+            height: 100px;
+          }
+
+          #table2{
+            position:absolute;
+            left:45%;
+            width:60px;
+            height: 100px;
+          }
+          
+          #table3{
+            float:right;
+            width:60px;
+            height: 100px;
+          }
+
+          #centerSection{
+            width:100%;
+            height:116px;
+          }
+
+   </style>
 </head>
 <body>
 
@@ -10,7 +68,7 @@
 //document.write("Hello World!")
 </script> 
 <!-- <button onclick="deal()">deal</button> -->
-<button id = "bidButton" hidden="hidden" onclick="bid()">Make Bid</button>
+<!-- <button id = "bidButton" hidden="hidden" onclick="bid()">Make Bid</button> -->
 <p id="name"></p>
 <p id="status">Initializing Game</p>
 <p id="turn"></p>
@@ -18,13 +76,26 @@
 <p id="handScore"></p>
 <h1></h1>
   <div id="table">
-  <img id="table0" src="">
+<!--   <img id="table0" src="">
   <img id="table1" src="">
   <img id="table2" src="">
-  <img id="table3" src="">
-</div>
+  <img id="table3" src=""> -->
+  <div id="centerTable">
+    <div  id="centerSection">
+    <img id="table2" src="">
+  </div>
+  <div id="centerSection">
+    <img id="table1" src="">
+    <img id="table3" src="">
+  </div>
+  <div id="centerSection">
+    <img id="table0" src="">
+  </div>
+  </div>
 
 <h1></h1>
+<div id="userHand" >
+  <button id = "bidButton" hidden="hidden" onclick="bid()">Make Bid</button>
 <img id="card0" src="">
 <img id="card1" src="">
 <img id="card2" src="">
@@ -34,6 +105,8 @@
 <img id="card6" src="">
 <img id="card7" src="">
 <img id="card8" src="">
+</div>
+</div>
 
 
 <!-- <div id="date"></div>
@@ -179,12 +252,17 @@ function getName(){
   });
 
   socket.on('game', function(gameInfo){
-    for(var i = 0; i < gameInfo.curPlayed.length;i++){
-        $('#table'+i).attr('src', gameInfo.curPlayed[i].img);
-        $('#table'+i).show();
-    }
-    for(i;i<4;i++){
-      $('#table'+i).hide();
+    if(gameInfo.curPlayed.length == 0){
+      for(i=0;i<4;i++){
+        $('#table'+i).hide();
+      }
+    } else {
+        var playedCard = (gameInfo.turn+3)%4;
+        console.log("Player "+ playedCard+ "just played");
+        var tableLocation = (playedCard - player.id + 4) %4;
+        console.log("tableLocation: "+tableLocation);
+        $('#table'+tableLocation).attr('src', gameInfo.curPlayed[gameInfo.curPlayed.length-1].img);
+        $('#table'+tableLocation).show();
     }
 
    // $('#handScore').text(gameInfo.team1HandPoints+" : "+team2HandPoints);
@@ -232,6 +310,7 @@ function getName(){
       }
       for(var i = 0; i < player.hand.length;i++){
         //idx = i;
+        console.log(i);
         $('#card'+i).attr('src', player.hand[i].img);
         $('#card'+i).show();
         $('#card'+i).click(function(){
@@ -240,7 +319,8 @@ function getName(){
 
           //check to see if the select was for playing the card 
           if(playerTurn==1){
-            selectCard(idx);
+            var select = selectCard(idx);
+            if (select == -1) return;
          // } else if(playerDiscard == 1){
             discard(idx);
           }
@@ -270,7 +350,10 @@ function getName(){
 
       if(!cardIsValid(card)){
         for(var i = 0; i < player.hand.length;i++){
-          if(cardIsValid(player.hand[i]))return;
+          if(cardIsValid(player.hand[i])){
+            alert("Playable card still in hand!");
+            return -1;
+          }
         }
       }
 
@@ -289,12 +372,13 @@ function getName(){
       console.log("Card played "+card.suit);
       socket.emit('cardPlayed', playPacket);
       playerTurn = 0;
+      return 0;
 
     }
 
     function cardIsValid(card){
-      if(card.suit == suit || card.suit==5) return 1;
-      if(card.val==11){
+      if(card.suit == suit || card.suit==4) return 1;
+      if(card.val==10){
         if(card.suit+suit==1||
           card.suit+suit==5){
           return 1;

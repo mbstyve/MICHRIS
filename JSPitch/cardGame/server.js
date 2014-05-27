@@ -473,8 +473,8 @@ function getWinningIndex(table){
     console.log(highCardVal);
     var card = table.gameInfo.curPlayed[i];
     console.log("Suit is "+card.suit)
-    if(card.suit == table.bidInfo.suitId || card.suit==5 ||
-      (card.val==11 && 
+    if(card.suit == table.bidInfo.suitId || card.suit==4 ||
+      (card.val==10 && 
         (card.suit+table.bidInfo.suitId==1||
           card.suit+table.bidInfo.suitId==5))){
       //card is valid
