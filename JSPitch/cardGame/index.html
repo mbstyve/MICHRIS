@@ -173,6 +173,7 @@ function getName(){
     player.id = playerObj.id;
     player.name = name;
     player.hand = [];
+    player.originalHand =[];
     player.points = 0;
     player.table = playerObj.table;
     console.log(player.id);
@@ -181,21 +182,11 @@ function getName(){
   });
 
   socket.on('hand', function(hand){
-        //console.log(hand[0].img);
-        // var handLength = player.hand.length-1;
-        // console.log(handLength);
-        // if(handLength!=-1){
-        //  // for (var i = player.hand.length-1; i >= 0; i--) {
-        //     removeElement("img");
-        //  // };
-        // }
 
         player.hand = hand;
+        player.originalHand = hand;
         var handLength = hand.length;
-        console.log(handLength);
-        //for(var i = 0; i < handLength;i++){
-          addTheImages();
-        //}
+        addTheImages();
   })
 
   socket.on('bid', function(bidInfo){
@@ -249,10 +240,15 @@ function getName(){
 
   socket.on('suit', function(bidInfo){
     alert("Player "+bidInfo.bidWinner+" won the bid with "+bidInfo.highBid+". The suit is "+bidInfo.suit);
-    suit = bidInfo.suit;
+    suitId = bidInfo.suitId;
   });
 
   socket.on('game', function(gameInfo){
+    //set Stats
+    $("#gameScore").text("Team 1: "+ gameInfo.team1GamePoints+" Team 2: "+gameInfo.team2GamePoints);
+    $("#handScore").text("Team 1: "+ gameInfo.team1HandPoints+" Team 2: "+gameInfo.team2HandPoints);
+
+
     if(gameInfo.curPlayed.length == 0){
       for(i=0;i<4;i++){
         $('#table'+i).hide();
@@ -315,8 +311,8 @@ function getName(){
         $('#card'+i).attr('src', player.hand[i].img);
         $('#card'+i).show();
         $('#card'+i).click(function(){
-          console.log(this.id);
           idx = this.id.substr(4,1);//selectCard(idx)
+          console.log("hand Index: "+idx);
 
           //check to see if the select was for playing the card 
           if(playerTurn==1){
@@ -326,20 +322,7 @@ function getName(){
             discard(idx);
           }
         });
-        // if(player.handLength==6){
-        //   $('#card6').hide();
-        //   $('#card7').hide();
-        //   $('#card8').hide();
-        // }
       }
-        // var img = document.createElement('img');
-        // img.id = card.suit+""+card.val;
-        // img.src = card.img;
-        // img.onclick = function(card) { selectCard(card); };
-        // document.body.appendChild(img);
-
-        //
-
     }
 
     function discard(idx){
@@ -347,7 +330,12 @@ function getName(){
     }
 
     function selectCard(idx){
-      var card = player.hand[idx];
+      var card = player.originalHand[idx];
+      console.log(card.suit);
+      console.log(card.val);
+      console.log("Current Suit: "+suitId);
+      console.log(player.hand);
+      console.log(player.originalHand);
 
       if(!cardIsValid(card)){
         for(var i = 0; i < player.hand.length;i++){
@@ -361,11 +349,13 @@ function getName(){
       //card is playable
 
       //remove card from hand
-      player.hand.splice(idx,1);
+      for(var i = 0; i < player.hand.length; i++){
+        if(player.hand[i] === card) player.hand.splice(i,1);
+      }
 
       //send card
       $('#card'+idx).hide();
-      console.log("Card"+idx+" selected");
+      console.log("Card "+idx+" selected");
       console.log("Player "+player.id+" played "+card.suit+""+card.val);
       playerTurn = 0;
       playPacket.table = player.table;
@@ -378,10 +368,10 @@ function getName(){
     }
 
     function cardIsValid(card){
-      if(card.suit == suit || card.suit==4) return 1;
+      if(card.suit == suitId || card.suit==4) return 1;
       if(card.val==10){
-        if(card.suit+suit==1||
-          card.suit+suit==5){
+        if(card.suit+suitId==1||
+          card.suit+suitId==5){
           return 1;
         }
       }

@@ -465,8 +465,9 @@ function getWinningIndex(table){
   console.log("CurPlayer.length= "+table.gameInfo.curPlayed.length);
   var highCard =0;
   var highCardVal =0;
-  var pointsWon;
+  var pointsWon = 0;
   var cards = table.gameInfo.curPlayed;
+
 
   for(var i = 0; i < 4; i++){
     console.log(highCard);
@@ -491,31 +492,34 @@ function getWinningIndex(table){
         }
       }
 
+      if(card.suit == 4){
+        pointsWon++;
+      } else {
       //add the point values
-      switch (card.val){
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 14:
-          pointsWon ++;
-          break;
-        case 3:
-          pointsWon +=3;
-          break;
-        case 2:
-          if((table.gameInfo.startedHand+i)%4 == 0){
-            table.gameInfo.team1HandPoints++;
-          } else table.gameInfo.team2HandPoints++;
-          break;
+        switch (card.val){
+          case 9:
+          case 10:
+          case 0:
+            pointsWon ++;
+            break;
+          case 2:
+            pointsWon +=3;
+            break;
+          case 1:
+            if((table.gameInfo.startedHand+i)%4 == 0){
+              table.gameInfo.team1HandPoints++;
+            } else table.gameInfo.team2HandPoints++;
+            break;
+        }
       }
     }else console.log("Card is invalid");
   }
 
+  console.log("points won: "+pointsWon);
   //add points to the correct team
   if((table.gameInfo.startedHand+highCard)%4 == 0){
-            table.gameInfo.team1HandPoints = pointsWon;
-  } else table.gameInfo.team2HandPoints = pointsWon;
+            table.gameInfo.team1HandPoints += pointsWon;
+  } else table.gameInfo.team2HandPoints += pointsWon;
 
   console.log("Winning index is "+highCard);
   table.gameInfo.turn = highCard;
